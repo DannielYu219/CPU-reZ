@@ -1,0 +1,15 @@
+Machine: MacBook Pro Mac17,9, Apple M5 Pro (6xSuper + 12xPerformance), 64GB
+Binary : /tmp/cpuz_bench (neon.c true-4-wide NEON + run.c dynamic dispatch + QoS + live scores)
+Build  : clang -arch arm64 -O3 -mcpu=native -ffp-contract=off
+Refs   : static table @0x1402FA4F0; default X Elite (820.0/9165.0)
+Orig   : ARM64 v1.05 in PD VM, Apple Silicon 16 cores: single 1560.9, multi 19401.7, ratio 12.4
+
+FAITHFUL (timeout-fill, ~20s/mode, live scores on stderr):
+single-core (1T) : headline 1518 (orig 1560.9, -1.8%)
+multi-core (16T): headline 18281 (orig 16c 19401.7, -5.8%; heat-soaked machine)
+multi-core (18T): headline 19647 (orig 16c 19401.7, +1.3%)
+multi/single (18T) = 19647/1518 = 12.94 (orig VM 12.4; X Elite self 11.18)
+
+Key multi fix: static row ranges + per-pass barrier => E-core stragglers every pass
+(17258). Dynamic fetch_add dispatch, CPUZ_CHUNK_ROWS=2 (orig APC granularity = 1 row),
+=> 19647. Remaining delta = thermals after a day of testing + v1.05/1.06 drift + E mix.

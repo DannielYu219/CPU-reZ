@@ -1,0 +1,6 @@
+*.o
+rez_bench
+sme_test
+sme_bench
+cpuz_bench
+.DS_Store
